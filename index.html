@@ -1,26 +1,96 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<title>The Decoder</title>
-</head>
-<body>
-	<p>Encoded text here</p>
-	<textarea id = "encoded" cols = "50" rows = "15" onchange = "decode()"></textarea>
-	<br>
-	<p>Normal text here</p>
-	<textarea id = "raw" cols = "50" rows = "4" readonly></textarea>
-	<script>
-		var outputStr = "";
-		var iter = 0;
-		function decode () {
-			outputStr = document.getElementById("encoded").value;
-			iter = parseInt(atob(outputStr)[atob(outputStr).length - 1]);
-			outputStr = atob(outputStr);
-			outputStr = outputStr.slice(0, -1);
-			for (var i = 1; i < iter; i++) {
-				outputStr = atob(outputStr);
+	<head>
+		<title>Water Physics</title>
+		<style>
+			table {
+				border-spacing: 0px;
 			}
-			document.getElementById("raw").value = outputStr;
-		}
-	</script>
-</body>
+			tr {
+				padding: 0px;
+			}
+			td {
+				height: 5px;
+				width: 5px;
+				padding: 0px;
+			}
+			.water {
+				background-color: #33AACC;
+			}
+			.air {
+				background-color: #FFFFFF;
+			}
+		</style>
+	</head>
+	<body>
+		<table>
+			<tbody id = "this">
+			</tbody>
+		</table>
+		<script defer charset = "utf-8" type = "text/javascript">
+			var newRow = document.createElement("tr");
+			var newPixel = document.createElement("td");
+			var elements = ["water", "air"];
+			for (var r = 0; r < 120; r++) {
+				newRow.id = r.toString() + "r";
+				document.getElementById("this").appendChild(newRow.cloneNode(true));
+				for (var d = 0; d < 241; d++) {
+					newPixel.id = r.toString() + "d" + d.toString();
+					newPixel.className = elements[Math.floor(Math.random()*elements.length)];
+					document.getElementById(r.toString() + "r").appendChild(newPixel.cloneNode(true));
+				}
+			}
+			var simulateTick = window.setInterval(function () {
+				let waterPixels = document.getElementsByClassName("water");
+				let waterArray = Array.prototype.slice.call(waterPixels);
+				waterArray.reverse();
+				waterArray.forEach(function (pixel) {
+					let row = parseInt(pixel.id);
+					let column = parseInt(pixel.id.split("d")[1]);
+					if (row < 119 && document.getElementById((row + 1).toString()+("d")+column.toString()).className == "air") {
+						document.getElementById((row + 1).toString()+"d"+column.toString()).className = "water";
+						pixel.className = "air";
+					}
+				});
+			}, 50);
+			var simulateFlow = window.setInterval(function () {
+				let waterPixels = document.getElementsByClassName("water");
+				let waterArray = Array.prototype.slice.call(waterPixels);
+				waterArray.forEach(function (pixel) {
+					let row = parseInt(pixel.id);
+					let column = parseInt(pixel.id.split("d")[1]);
+					let dir = Math.round(Math.random())*2-1;
+					let wall = (dir*120 + 120);
+					if (!(row < 119 && document.getElementById((row + 1).toString()+("d")+column.toString()).className == "air")) {
+						if (column != 0 && column != 240) {
+							if ((document.getElementById(row.toString()+"d"+(column+1).toString()).className == "air" && document.getElementById(row.toString()+"d"+(column-1)).className == "air") || Math.random() < 0.4) {
+								if (column != wall && document.getElementById(row.toString()+"d"+(column+dir).toString()).className == "air" ) {
+									document.getElementById(row.toString()+"d"+(column+dir).toString()).className = "water";
+									pixel.className = "air";
+								} else if (column != (240-wall) && document.getElementById(row.toString()+"d"+(column-dir)).className == "air") {
+									document.getElementById(row.toString()+"d"+(column-dir).toString()).className = "water";
+									pixel.className = "air";
+								}
+							}
+						} else if (column == 0) {
+							if (document.getElementById(row.toString()+"d1").className == "water" || Math.random() < 0.6) {
+								if (document.getElementById(row.toString()+"d1").className == "air") {
+									document.getElementById(row.toString()+"d1").className = "water";
+									pixel.className = "air";
+								}
+							}
+						} else if (column == 240) {
+							if (document.getElementById(row.toString()+"d179").className == "water" || Math.random() < 0.6) {
+								if (document.getElementById(row.toString()+"d179").className == "air") {
+									document.getElementById(row.toString()+"d179").className = "water";
+									pixel.className = "air";
+								}
+							}
+						}
+					}
+				});
+			}, 69);
+		</script>
+		<script></script>
+	</body>
+</html>
