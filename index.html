@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>The Decoder</title>
+</head>
+<body>
+	<p>Encoded text here</p>
+	<textarea id = "encoded" cols = "50" rows = "15" onchange = "decode()"></textarea>
+	<br>
+	<p>Normal text here</p>
+	<textarea id = "raw" cols = "50" rows = "4" readonly></textarea>
+	<script>
+		var outputStr = "";
+		var iter = 0;
+		function decode () {
+			outputStr = document.getElementById("encoded").value;
+			iter = parseInt(atob(outputStr)[atob(outputStr).length - 1]);
+			outputStr = atob(outputStr);
+			outputStr = outputStr.slice(0, -1);
+			for (var i = 1; i < iter; i++) {
+				outputStr = atob(outputStr);
+			}
+			document.getElementById("raw").value = outputStr;
+		}
+	</script>
+</body>
