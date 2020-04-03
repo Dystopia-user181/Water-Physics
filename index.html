@@ -3,6 +3,9 @@
 	<head>
 		<title>Water Physics</title>
 		<style>
+			body {
+				font-family: sans-serif;
+			}
 			table {
 				border-spacing: 0px;
 			}
@@ -10,138 +13,790 @@
 				padding: 0px;
 			}
 			td {
-				height: 5px;
-				width: 5px;
+				height: 7px;
+				width: 7px;
 				padding: 0px;
+			}
+			div {
+				text-align: center;
+			}
+			.textindiv {
+				font-size: 12px;
+			}
+			#airdiv {
+				color: #FFFFFF;
+			}
+			#waterdiv {
+				color: #44C0FF;
+			}
+			#steamdiv {
+				color: #88DDFF;
+			}
+			#dirtdiv {
+				color: #996633;
+			}
+			#icediv {
+				color: #CCDDEE;
+			}
+			#bedrockdiv {
+				color: #335544;
+			}
+			#stonediv {
+				color: #777777;
+			}
+			#heaterdiv {
+				color: #FF0000;
+			}
+			#coolerdiv {
+				color: #0000FF;
+			}
+			#toolbar {
+				float: right;
 			}
 			.water {
 				background-color: #33AACC;
 			}
 			.air {
-				background-color: #FFFFFF;
+				background-color: #EEEEEE;
 			}
 			.steam {
-				background-color: #88ddff;
+				background-color: #88DDFF;
+			}
+			.ice {
+				background-color: #CCDDEE;
+			}
+			.dry {
+				background-color: #775726;
+			}
+			.wet {
+				background-color: #705223;
+			}
+			.waterlogged {
+				background-color: #654820;
+			}
+			.mud {
+				background-color: #604417;
+			}
+			.bedrock {
+				background-color: #335544;
+			}
+			.stone {
+				background-color: #777777;
+			}
+			.heater {
+				background-color: #FF0000;
+			}
+			.cooler {
+				background-color: #0000FF;
+			}
+			.button {
+				margin: 10px;
+				border: 3px solid black;
+				line-height: 50px;
+				width: 50px;
+				height: 50px;
+			}
+			#air {
+				background-color: #FFFFFF;
+			}
+			#air:hover {
+				background-color: #C0C0C0;
+			}
+			#water {
+				background-color: #44C0FF;
+			}
+			#water:hover {
+				background-color: #268CA6;
+			}
+			#steam {
+				background-color: #88DDFF;
+			}
+			#steam:hover {
+				background-color: #66A8C0;
+			}
+			#dirt {
+				background-color: #996633;
+			}
+			#dirt:hover {
+				background-color: #5A421B;
+			}
+			#stone {
+				background-color: #777777;
+			}
+			#stone:hover {
+				background-color: #2F2F2F;
+			}
+			#ice {
+				background-color: #CCDDEE;
+			}
+			#ice:hover {
+				background-color: #778899;
+			}
+			#bedrock {
+				background-color: #335544;
+			}
+			#bedrock:hover {
+				background-color: #001105;
+			}
+			#heater {
+				background-color: #FF0000;
+			}
+			#heater:hover {
+				background-color: #400000;
+			}
+			#cooler {
+				background-color: #0000FF;
+			}
+			#cooler:hover {
+				background-color: #000040;
 			}
 		</style>
 	</head>
 	<body>
+		<div id = "toolbar">
+			<span id = "toolbarlabel">Toolbar</span>
+			<div onclick = "placer = 'air'" class = "button" id = "air"><span class = "textindiv" id = "airdiv">Erase</span></div>
+			<div onclick = "placer = 'water'" class = "button" id = "water"><span class = "textindiv" id = "waterdiv">Water</span></div>
+			<div onclick = "placer = 'steam'" class = "button" id = "steam"><span class = "textindiv" id = "steamdiv">Steam</span></div>
+			<div onclick = "placer = 'dirt dry'" class = "button" id = "dirt"><span class = "textindiv" id = "dirtdiv">Dirt</span></div>
+			<div onclick = "placer = 'stone'" class = "button" id = "stone"><span class = "textindiv" id = "stonediv">Stone</span></div>
+			<div onclick = "placer = 'ice'" class = "button" id = "ice"><span class = "textindiv" id = "icediv">Ice</span></div>
+			<div onclick = "placer = 'bedrock'" class = "button" id = "bedrock"><span class = "textindiv" id = "bedrockdiv">Bedrock</span></div>
+			<div onclick = "placer = 'heater'" class = "button" id = "heater"><span class = "textindiv" id = "heaterdiv">Heater</span></div>
+			<div onclick = "placer = 'cooler'" class = "button" id = "cooler"><span class = "textindiv" id = "coolerdiv">Cooler</span></div>
+		</div>
 		<table>
 			<tbody id = "this">
 			</tbody>
 		</table>
 		<script defer charset = "utf-8" type = "text/javascript">
+			function $(x) {return document.getElementById(x);} 
+			function str(x) {return (x.toString());}
+			var mousedown = false;
+			var placer = "air";
 			var newRow = document.createElement("tr");
 			var newPixel = document.createElement("td");
-			var elements = ["water", "air", "steam", "air"];
-			for (var r = 0; r < 120; r++) {
-				newRow.id = r.toString() + "r";
-				document.getElementById("this").appendChild(newRow.cloneNode(true));
-				for (var d = 0; d < 241; d++) {
-					newPixel.id = r.toString() + "d" + d.toString();
+			var elements = ["air"];
+			var placeIntervals = {};
+			document.addEventListener("mousedown", function(){mousedown = true});
+			document.addEventListener("mouseup", function(){mousedown = false});
+			for (var r = 0; r < 60; r++) {
+				newRow.id = str(r) + "r";
+				$("this").appendChild(newRow.cloneNode(true));
+				for (var d = 0; d < 121; d++) {
+					newPixel.id = str(r) + "d" + str(d);
 					newPixel.className = elements[Math.floor(Math.random()*elements.length)];
-					document.getElementById(r.toString() + "r").appendChild(newPixel.cloneNode(true));
+					$(str(r) + "r").appendChild(newPixel.cloneNode(true));
+					$(str(r) + "d" + str(d)).addEventListener("mouseover", function (e) {
+						if (mousedown) {
+							var t = e.target;
+							$(t.id).className = placer;
+						}
+					});
 				}
 			}
-			var simulateDown = window.setInterval(function () {
+			var simulateWater = window.setInterval(function () {
 				let waterPixels = document.getElementsByClassName("water");
 				let waterArray = Array.prototype.slice.call(waterPixels);
 				waterArray.reverse();
 				waterArray.forEach(function (pixel) {
 					let row = parseInt(pixel.id);
 					let column = parseInt(pixel.id.split("d")[1]);
-					if (row < 119 && document.getElementById((row + 1).toString()+("d")+column.toString()).className == "air") {
-						document.getElementById((row + 1).toString()+"d"+column.toString()).className = "water";
-						pixel.className = "air";
+					if (row < 59 && $(str(row + 1)+"d"+str(column)).className == "air") {
+						pixel.className = $(str(row + 1)+"d"+str(column)).className;
+						$(str(row + 1)+"d"+str(column)).className = "water";
+					} else {
+						let dir = Math.round(Math.random())*2-1;
+						let wall = (dir*60 + 60);
+						if (column != 0 && column != 120) {
+							if (($(str(row)+"d"+str(column+1)).className == "air" && $(str(row)+"d"+str(column-1)).className == "air") || ($(str(row)+"d"+str(column+1)).className == "steam" && $(str(row)+"d"+str(column-1)).className == "steam") || Math.random() < 0.4) {
+								if (column != wall && ($(str(row)+"d"+str(column+dir)).className == "air" || $(str(row)+"d"+str(column+dir)).className == "steam")) {
+									pixel.className = $(str(row)+"d"+str(column+dir)).className;
+									$(str(row)+"d"+str(column+dir)).className = "water";
+								} else if (column != (120-wall) && ($(str(row)+"d"+str(column-dir)).className == "air" || $(str(row)+"d"+str(column-dir)).className == "steam")) {
+									pixel.className = $(str(row)+"d"+str(column-dir)).className;
+									$(str(row)+"d"+str(column-dir)).className = "water";
+								}
+							}
+						} else if (column == 0) {
+							if (Math.random() < 0.6) {
+								if ($(str(row)+"d1").className == "air" || $(str(row)+"d1").className == "steam") {
+									pixel.className = $(str(row)+"d1").className;
+									$(str(row)+"d1").className = "water";
+								}
+							}
+						} else if (column == 120) {
+							if (Math.random() < 0.6) {
+								if ($(str(row)+"d119").className == "air" || $(str(row)+"d119").className == "steam") {
+									pixel.className = $(str(row)+"d119").className;
+									$(str(row)+"d119").className = "water";
+								}
+							}
+						}
 					}
 				});
 			}, 50);
-			var simulateFlow = window.setInterval(function () {
+			var simulateHeatingCooling = setInterval(function () {
 				let waterPixels = document.getElementsByClassName("water");
 				let waterArray = Array.prototype.slice.call(waterPixels);
+				var row;
+				var column;
+				function getDefault (param) {
+					return $(str(row+1)+"d"+str(column)).className == param || $(str(row-1)+"d"+str(column)).className == param || $(str(row)+"d"+str(column+1)).className == param || $(str(row)+"d"+str(column-1)).className == param;
+				}
+				function getLow (param) {
+					return $("58d"+str(column)).className == param || $("59d"+str(column-1)).className == param || $("59d"+str(column+1)).className == param;
+				}
+				function getHigh (param) {
+					return $("1d"+str(column)).className == param || $("0d"+str(column-1)).className == param || $("0d"+str(column+1)).className == param;
+				}
+				function get0 (param) {
+					return $(str(row+1)+("d0")).className == param || $(str(row-1)+("d0")).className == param || $(str(row)+("d1")).className == param;
+				}
+				function get120 (param) {
+					return $(str(row+1)+("d120")).className == param || $(str(row-1)+("d120")).className == param || $(str(row)+("d119")).className == param;
+				}
+				function get0low (param) {
+					return $("59d1").className == param || $("58d0").className == param;
+				}
+				function get120low (param) {
+					return $("59d119").className == param || $("58d120").className == param;
+				}
+				function get0high (param) {
+					return $("0d1").className == param || $("1d0").className == param;
+				}
+				function get120high (param) {
+					return $("0d119").className == param || $("1d120").className == param;
+				}
 				waterArray.forEach(function (pixel) {
-					let row = parseInt(pixel.id);
-					let column = parseInt(pixel.id.split("d")[1]);
-					let dir = Math.round(Math.random())*2-1;
-					let wall = (dir*120 + 120);
-					if (!(row < 119 && document.getElementById((row + 1).toString()+("d")+column.toString()).className == "air")) {
-						if (column != 0 && column != 240) {
-							if ((document.getElementById(row.toString()+"d"+(column+1).toString()).className == "air" && document.getElementById(row.toString()+"d"+(column-1)).className == "air") || Math.random() < 0.4) {
-								if (column != wall && document.getElementById(row.toString()+"d"+(column+dir).toString()).className == "air" ) {
-									document.getElementById(row.toString()+"d"+(column+dir).toString()).className = "water";
-									pixel.className = "air";
-								} else if (column != (240-wall) && document.getElementById(row.toString()+"d"+(column-dir)).className == "air") {
-									document.getElementById(row.toString()+"d"+(column-dir).toString()).className = "water";
-									pixel.className = "air";
-								}
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					switch (row) {
+						case 59:
+						switch (column) {
+							case 0:
+							if (get0low("heater")) {
+								pixel.className = "steam";
 							}
-						} else if (column == 0) {
-							if (Math.random() < 0.6) {
-								if (document.getElementById(row.toString()+"d1").className == "air") {
-									document.getElementById(row.toString()+"d1").className = "water";
-									pixel.className = "air";
-								}
+							break;
+							case 120:
+							if (get120low("heater")) {
+								pixel.className = "steam";
 							}
-						} else if (column == 240) {
-							if (Math.random() < 0.6) {
-								if (document.getElementById(row.toString()+"d179").className == "air") {
-									document.getElementById(row.toString()+"d179").className = "water";
-									pixel.className = "air";
-								}
+							break;
+							default:
+							if (getLow("heater")) {
+								pixel.className = "steam";
+							}
+						}
+						break;
+						case 0:
+						switch (column) {
+							case 0: 
+							if (get0high("heater")) {
+								pixel.className = "steam";
+							}
+							break;
+							case 120: 
+							if (get120high("heater")) {
+								pixel.className = "steam";
+							}
+							break;
+							default:
+							if (getHigh("heater")) {
+								pixel.className = "steam";
+							}
+						}
+						break;
+						default:
+						switch (column) {
+							case 0:
+							if (get0("heater")) {
+								pixel.className = "steam";
+							}
+							break;
+							case 120:
+							if (get120("heater")) {
+								pixel.className = "steam";
+							}
+							break;
+							default:
+							if (getDefault("heater")) {
+								pixel.className = "steam";
 							}
 						}
 					}
 				});
-			}, 69);
-			var simulateUp = setInterval(function () {
+				waterArray.forEach(function (pixel) {
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					switch (row) {
+						case 59:
+						switch (column) {
+							case 0:
+							if (get0low("cooler")) {
+								pixel.className = "ice";
+							}
+							break;
+							case 120:
+							if (get120low("cooler")) {
+								pixel.className = "ice";
+							}
+							break;
+							default:
+							if (getLow("cooler")) {
+								pixel.className = "ice";
+							}
+						}
+						break;
+						case 0:
+						switch (column) {
+							case 0: 
+							if (get0high("cooler")) {
+								pixel.className = "ice";
+							}
+							break;
+							case 120: 
+							if (get120high("cooler")) {
+								pixel.className = "ice";
+							}
+							break;
+							default:
+							if (getHigh("cooler")) {
+								pixel.className = "ice";
+							}
+						}
+						break;
+						default:
+						switch (column) {
+							case 0:
+							if (get0("cooler")) {
+								pixel.className = "ice";
+							}
+							break;
+							case 120:
+							if (get120("cooler")) {
+								pixel.className = "ice";
+							}
+							break;
+							default:
+							if (getDefault("cooler")) {
+								pixel.className = "ice";
+							}
+						}
+					}
+				});
+				let steamPixels = document.getElementsByClassName("steam");
+				let steamArray = Array.prototype.slice.call(steamPixels);
+				steamArray.forEach(function (pixel) {
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					switch (row) {
+						case 59:
+						switch (column) {
+							case 0:
+							if (get0low("cooler")) {
+								pixel.className = "water";
+							}
+							break;
+							case 120:
+							if (get120low("cooler")) {
+								pixel.className = "water";
+							}
+							break;
+							default:
+							if (getLow("cooler")) {
+								pixel.className = "water";
+							}
+						}
+						break;
+						case 0:
+						switch (column) {
+							case 0: 
+							if (get0high("cooler")) {
+								pixel.className = "water";
+							}
+							break;
+							case 120: 
+							if (get120high("cooler")) {
+								pixel.className = "water";
+							}
+							break;
+							default:
+							if (getHigh("cooler")) {
+								pixel.className = "water";
+							}
+						}
+						break;
+						default:
+						switch (column) {
+							case 0:
+							if (get0("cooler")) {
+								pixel.className = "water";
+							}
+							break;
+							case 120:
+							if (get120("cooler")) {
+								pixel.className = "water";
+							}
+							break;
+							default:
+							if (getDefault("cooler")) {
+								pixel.className = "water";
+							}
+						}
+					}
+				});
+				let icePixels = document.getElementsByClassName("ice");
+				let iceArray = Array.prototype.slice.call(icePixels);
+				iceArray.forEach(function (pixel) {
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					switch (row) {
+						case 59:
+						switch (column) {
+							case 0:
+							if (get0low("heater")) {
+								pixel.className = "water";
+							}
+							break;
+							case 120:
+							if (get120low("heater")) {
+								pixel.className = "water";
+							}
+							break;
+							default:
+							if (getLow("heater")) {
+								pixel.className = "water";
+							}
+						}
+						break;
+						case 0:
+						switch (column) {
+							case 0: 
+							if (get0high("heater")) {
+								pixel.className = "water";
+							}
+							break;
+							case 120: 
+							if (get120high("heater")) {
+								pixel.className = "water";
+							}
+							break;
+							default:
+							if (getHigh("heater")) {
+								pixel.className = "water";
+							}
+						}
+						break;
+						default:
+						switch (column) {
+							case 0:
+							if (get0("heater")) {
+								pixel.className = "water";
+							}
+							break;
+							case 120:
+							if (get120("heater")) {
+								pixel.className = "water";
+							}
+							break;
+							default:
+							if (getDefault("heater")) {
+								pixel.className = "water";
+							}
+						}
+					}
+				});
+			}, 3000);
+			var simulateSteam = setInterval(function () {
 				let steamPixels = document.getElementsByClassName("steam");
 				let steamArray = Array.prototype.slice.call(steamPixels);
 				steamArray.forEach(function (pixel) {
 					let row = parseInt(pixel.id);
 					let column = parseInt(pixel.id.split("d")[1]);
-					if (row > 0 && document.getElementById((row - 1).toString()+("d")+column.toString()).className != "steam") {
-						pixel.className = document.getElementById((row - 1).toString()+"d"+column.toString()).className;
-						document.getElementById((row - 1).toString()+"d"+column.toString()).className = "steam";
+					if (row > 0 && ($(str(row-1)+"d"+str(column)).className == "air" || $(str(row-1)+"d"+str(column)).className == "water" || $(str(row-1)+"d"+str(column)).className == "ice" || $(str(row-1)+"d"+str(column)).className == "dirt" || $(str(row-1)+"d"+str(column)).className == "stone")) {
+						pixel.className = $(str((row-1))+"d"+str(column)).className;
+						$(str((row-1))+"d"+str(column)).className = "steam";
+					} else {
+						let dir = Math.round(Math.random())*2-1;
+						let wall = (dir*120 + 120);
+						if (column != 0 && column != 120) {
+							if (($(str(row)+"d"+str(column+1)).className == "air" && $(str(row)+"d"+(column-1)).className == "air") || Math.random() < 0.6) {
+								if (column != wall && $(str(row)+"d"+str(column+dir)).className == "air" ) {
+									pixel.className = $(str(row)+"d"+str(column+dir)).className;
+									$(str(row)+"d"+str(column+dir)).className = "steam";
+								} else if (column != (120-wall) && $(str(row)+"d"+str(column-dir)).className == "air") {
+									pixel.className = $(str(row)+"d"+str(column-dir)).className;
+									$(str(row)+"d"+str(column-dir)).className = "steam";
+								}
+							}
+						} else if (column == 0) {
+							if (Math.random() < 0.6) {
+								if ($(str(row)+"d1").className == "air") {
+									pixel.className = $(str(row)+"d1").className;
+									$(str(row)+"d1").className = "steam";
+								}
+							}
+						} else if (column == 120) {
+							if (Math.random() < 0.6) {
+								if ($(str(row)+"d119").className == "air") {
+									pixel.className = $(str(row)+"d119").className;
+									$(str(row)+"d119").className = "steam";
+								}
+							}
+						}
 					}
 				});
 			}, 50);
-			var simulateRising = window.setInterval(function () {
-				let steamPixels = document.getElementsByClassName("steam");
-				let steamArray = Array.prototype.slice.call(steamPixels);
-				steamArray.forEach(function (pixel) {
+			var simulateDirt = setInterval(function () {
+				let dirtPixels = document.getElementsByClassName("dirt");
+				let dirtArray = Array.prototype.slice.call(dirtPixels);
+				dirtArray.reverse();
+				dirtArray.forEach(function (pixel) {
 					let row = parseInt(pixel.id);
 					let column = parseInt(pixel.id.split("d")[1]);
-					let dir = Math.round(Math.random())*2-1;
-					let wall = (dir*120 + 120);
-					if (!(row > 0 && document.getElementById((row - 1).toString()+("d")+column.toString()).className != "steam")) {
-						if (column != 0 && column != 240) {
-							if ((document.getElementById(row.toString()+"d"+(column+1).toString()).className == "air" && document.getElementById(row.toString()+"d"+(column-1)).className == "air") || Math.random() < 0.6) {
-								if (column != wall && document.getElementById(row.toString()+"d"+(column+dir).toString()).className == "air" ) {
-									document.getElementById(row.toString()+"d"+(column+dir).toString()).className = "steam";
-									pixel.className = "air";
-								} else if (column != (240-wall) && document.getElementById(row.toString()+"d"+(column-dir)).className == "air") {
-									document.getElementById(row.toString()+"d"+(column-dir).toString()).className = "steam";
-									pixel.className = "air";
+					if (row < 59 && ($(str(row+1)+"d"+str(column)).className == "air" || $(str(row+1)+"d"+str(column)).className == "water" || $(str(row+1)+"d"+str(column)).className == "ice" || $(str(row+1)+"d"+str(column)).className == "steam")) {
+						let x = pixel.className;
+						pixel.className = $(str(row+1)+"d"+str(column)).className;
+						$(str(row+1)+"d"+str(column)).className = x;
+					} else {
+						let dir = Math.round(Math.random())*2-1;
+						let wall = (dir*120 + 120);
+						if (row < 58) { 
+							if (column != 0 && column != 120) {
+								if ((($(str(row)+"d"+str(column+1)).className == "air" || $(str(row)+"d"+str(column+1)).className == "steam" || $(str(row)+"d"+str(column+1)).className == "water") && ($(str(row+1)+"d"+str(column+1)).className == "air" || $(str(row+1)+"d"+str(column+1)).className == "steam" || $(str(row+1)+"d"+str(column+1)).className == "water")) || (($(str(row)+"d"+str(column-1)).className == "air" || $(str(row)+"d"+str(column-1)).className == "steam" || $(str(row)+"d"+str(column-1)).className == "water") && ($(str(row+1)+"d"+str(column-1)).className == "air" || $(str(row+1)+"d"+str(column-1)).className == "steam" || $(str(row+1)+"d"+str(column-1)).className == "water"))) {
+									if (($(str(row)+"d"+str(column+dir)).className == "air" || $(str(row)+"d"+str(column+dir)).className == "steam" || $(str(row)+"d"+str(column+dir)).className == "water") && ($(str(row+1)+"d"+str(column+dir)).className == "air" || $(str(row+1)+"d"+str(column+dir)).className == "steam" || $(str(row+1)+"d"+str(column+dir)).className == "water")) {
+										let x = pixel.className;
+										pixel.className = $(str(row)+"d"+str(column+dir)).className;
+										$(str(row)+"d"+str(column+dir)).className = x;
+									} else if (($(str(row)+"d"+str(column-dir)).className == "air" || $(str(row)+"d"+str(column-dir)).className == "steam" || $(str(row)+"d"+str(column-dir)).className == "water") && ($(str(row+1)+"d"+str(column-dir)).className == "air" || $(str(row+1)+"d"+str(column-dir)).className == "steam" || $(str(row+1)+"d"+str(column-dir)).className == "water")) {
+										let x = pixel.className;
+										pixel.className = $(str(row)+"d"+str(column-dir)).className;
+										$(str(row)+"d"+str(column-dir)).className = x;
+									}
 								}
-							}
-						} else if (column == 0) {
-							if (Math.random() < 0.6) {
-								if (document.getElementById(row.toString()+"d1").className == "air") {
-									document.getElementById(row.toString()+"d1").className = "steam";
-									pixel.className = "air";
+							} else if (column == 0) {
+								if (($(str(row)+"d1").className == "air" || $(str(row)+"d1").className == "steam" || $(str(row)+"d1").className == "water") && ($(str(row+1)+"d1").className == "air" || $(str(row+1)+"d1").className == "steam" || $(str(row+1)+"d1").className == "water")) {
+									let x = pixel.className;
+									pixel.className = $(str(row)+"d1").className;
+									$(str(row)+"d1").className = x;
 								}
-							}
-						} else if (column == 240) {
-							if (Math.random() < 0.6) {
-								if (document.getElementById(row.toString()+"d179").className == "air") {
-									document.getElementById(row.toString()+"d179").className = "steam";
-									pixel.className = "air";
+							} else if (column == 120) {
+								if (($(str(row)+"d119").className == "air" || $(str(row)+"d119").className == "steam" || $(str(row)+"d119").className == "water") && ($(str(row+1)+"d119").className == "air" || $(str(row+1)+"d119").className == "steam" || $(str(row+1)+"d119").className == "water")) {
+									let x = pixel.className;
+									pixel.className = $(str(row)+"d119").className;
+									$(str(row)+"d119").className = x;
 								}
 							}
 						}
 					}
 				});
-			}, 69);
+			}, 50);
+			var simulateWet = setInterval(function () {
+				let dirtPixels = document.getElementsByClassName("waterlogged");
+				let dirtArray = Array.prototype.slice.call(dirtPixels);
+				var row;
+				var column;
+				function getDefault (param) {
+					return $(str(row+1)+"d"+str(column)).className == param || $(str(row-1)+"d"+str(column)).className == param || $(str(row)+"d"+str(column+1)).className == param || $(str(row)+"d"+str(column-1)).className == param;
+				}
+				function getLow (param) {
+					return $("58d"+str(column)).className == param || $("59d"+str(column-1)).className == param || $("59d"+str(column+1)).className == param;
+				}
+				function get0 (param) {
+					return $(str(row+1)+("d0")).className == param || $(str(row-1)+("d0")).className == param || $(str(row)+("d1")).className == param;
+				}
+				function get120 (param) {
+					return $(str(row+1)+("d120")).className == param || $(str(row-1)+("d120")).className == param || $(str(row)+("d119")).className == param;
+				}
+				function get0low (param) {
+					return $("59d1").className == param || $("58d0").className == param;
+				}
+				function get120low (param) {
+					return $("59d119").className == param || $("58d120").className == param;
+				}
+				dirtArray.forEach(function (pixel) {
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					if (row < 59) {
+						switch (column) {
+							case 0:
+							if (get0("water")) {
+								pixel.className = "dirt mud";
+							}
+							break;
+							case 120:
+							if (get120("water")) {
+								pixel.className = "dirt mud";
+							}
+							break;
+							default:
+							if (getDefault("water")) {
+								pixel.className = "dirt mud";
+							}
+						} 
+					} else {
+						switch (column) {
+							case 0:
+							if (get0low("water")) {
+								pixel.className = "dirt mud";
+							}
+							break;
+							case 120:
+							if (get120low("water")) {
+								pixel.className = "dirt mud";
+							}
+							break;
+							default:
+							if (getLow("water")) {
+								pixel.className = "dirt mud";
+							}
+						}
+					}
+				});
+				dirtPixels = document.getElementsByClassName("wet");
+				dirtArray = Array.prototype.slice.call(dirtPixels);
+				dirtArray.forEach(function (pixel) {
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					if (row < 59) {
+						switch (column) {
+							case 0:
+							if (get0("water") || get0("mud")) {
+								pixel.className = "dirt waterlogged";
+							}
+							break;
+							case 120:
+							if (get120("water") || get120("mud")) {
+								pixel.className = "dirt waterlogged";
+							}
+							break;
+							default:
+							if (getDefault("water") || getDefault("mud")) {
+								pixel.className = "dirt waterlogged";
+							}
+						} 
+					} else {
+						switch (column) {
+							case 0:
+							if (get0low("water") || get0low("mud")) {
+								pixel.className = "dirt waterlogged";
+							}
+							break;
+							case 120:
+							if (get120low("water") || get120low("mud")) {
+								pixel.className = "dirt waterlogged";
+							}
+							break;
+							default:
+							if (getLow("water") || getLow("mud")) {
+								pixel.className = "dirt waterlogged";
+							}
+						}
+					}
+				});
+				dirtPixels = document.getElementsByClassName("dry");
+				dirtArray = Array.prototype.slice.call(dirtPixels);
+				dirtArray.forEach(function (pixel) {
+					row = parseInt(pixel.id);
+					column = parseInt(pixel.id.split("d")[1]);
+					if (row < 59) {
+						switch (column) {
+							case 0:
+							if (get0("water") || get0("mud") || get0("waterlogged")) {
+								pixel.className = "dirt wet";
+							}
+							break;
+							case 120:
+							if (get120("water") || get120("mud") || get120("waterlogged")) {
+								pixel.className = "dirt wet";
+							}
+							break;
+							default:
+							if (getDefault("water") || getDefault("mud") || getDefault("waterlogged")) {
+								pixel.className = "dirt wet";
+							}
+						} 
+					} else {
+						switch (column) {
+							case 0:
+							if (get0low("water") || get0low("mud") || get0low("waterlogged")) {
+								pixel.className = "dirt wet";
+							}
+							break;
+							case 120:
+							if (get120low("water") || get120low("mud") || get120low("waterlogged")) {
+								pixel.className = "dirt wet";
+							}
+							break;
+							default:
+							if (getLow("water") || getLow("mud") || getLow("waterlogged")) {
+								pixel.className = "dirt wet";
+							}
+						}
+					}
+				});
+			}, 2000);
+			var simulateStone = setInterval(function () {
+				let stonePixels = document.getElementsByClassName("stone");
+				let stoneArray = Array.prototype.slice.call(stonePixels);
+				stoneArray.reverse();
+				stoneArray.forEach(function (pixel) {
+					let row = parseInt(pixel.id);
+					let column = parseInt(pixel.id.split("d")[1]);
+					if (row < 59 && ($(str(row+1)+"d"+str(column)).className == "air" || $(str(row+1)+"d"+str(column)).className == "water" || $(str(row+1)+"d"+str(column)).className == "ice" || $(str(row+1)+"d"+str(column)).className == "steam")) {
+						pixel.className = $(str(row+1)+"d"+str(column)).className;
+						$(str(row+1)+"d"+str(column)).className = "stone";
+					}
+				});
+			}, 50);
+			var simulateIce = setInterval(function () {
+				let icePixels = document.getElementsByClassName("ice");
+				let iceArray = Array.prototype.slice.call(icePixels);
+				iceArray.reverse();
+				iceArray.forEach(function (pixel) {
+					let row = parseInt(pixel.id);
+					let column = parseInt(pixel.id.split("d")[1]);
+					if (row < 59 && $(str(row+1)+"d"+str(column)).className == "air") {
+						pixel.className = $(str(row+1)+"d"+str(column)).className;
+						$(str(row+1)+"d"+str(column)).className = "ice";
+					} else if (row > 0 && $(str(row-1)+"d"+str(column)).className == "water") {
+						pixel.className = $(str(row-1)+"d"+str(column)).className;
+						$(str(row-1)+"d"+str(column)).className = "ice";
+					} else {
+						let dir = Math.round(Math.random())*2-1;
+						let wall = (dir*120 + 120);
+						if (row < 58) { 
+							if (column != 0 && column != 120) {
+								if ((($(str(row)+"d"+str(column+1)).className == "air" || $(str(row)+"d"+str(column+1)).className == "steam") && ($(str(row+1)+"d"+str(column+1)).className == "air" || $(str(row+1)+"d"+str(column+1)).className == "steam")) || (($(str(row)+"d"+str(column-1)).className == "air" || $(str(row)+"d"+str(column-1)).className == "steam") && ($(str(row+1)+"d"+str(column-1)).className == "air" || $(str(row+1)+"d"+str(column-1)).className == "steam"))) {
+									if (($(str(row)+"d"+str(column+dir)).className == "air" || $(str(row)+"d"+str(column+dir)).className == "steam" || $(str(row)+"d"+str(column+dir)).className == "water") && ($(str(row+1)+"d"+str(column+dir)).className == "air" || $(str(row+1)+"d"+str(column+dir)).className == "steam")) {
+										let x = pixel.className;
+										pixel.className = $(str(row)+"d"+str(column+dir)).className;
+										$(str(row)+"d"+str(column+dir)).className = x;
+									} else if (($(str(row)+"d"+str(column-dir)).className == "air" || $(str(row)+"d"+str(column-dir)).className == "steam" || $(str(row)+"d"+str(column-dir)).className == "water") && ($(str(row+1)+"d"+str(column-dir)).className == "air" || $(str(row+1)+"d"+str(column-dir)).className == "steam")) {
+										let x = pixel.className;
+										pixel.className = $(str(row)+"d"+str(column-dir)).className;
+										$(str(row)+"d"+str(column-dir)).className = x;
+									}
+								}
+							} else if (column == 0) {
+								if (($(str(row)+"d1").className == "air" || $(str(row)+"d1").className == "steam") && ($(str(row+1)+"d1").className == "air" || $(str(row+1)+"d1").className == "steam")) {
+									let x = pixel.className;
+									pixel.className = $(str(row)+"d1").className;
+									$(str(row)+"d1").className = x;
+								}
+							} else if (column == 120) {
+								if (($(str(row)+"d119").className == "air" || $(str(row)+"d119").className == "steam") && ($(str(row+1)+"d119").className == "air" || $(str(row+1)+"d119").className == "steam")) {
+									let x = pixel.className;
+									pixel.className = $(str(row)+"d119").className;
+									$(str(row)+"d119").className = x;
+								}
+							}
+						}
+					}
+				});
+			}, 50)
 		</script>
 	</body>
 </html>
